@@ -78,9 +78,7 @@ class Login extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  // TODO: Tambahkan logika autentikasi
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF7A5DF5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
