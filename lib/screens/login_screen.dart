@@ -16,7 +16,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Welcome to DooBee",
+                "Selamat Datang di DooBee",
                 style: TextStyle(
                   fontSize: 24,
                   color: Colors.white,
@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Please login to your account or create\nnew account to continue",
+                "Silakan masuk ke akun Anda atau buat\nakun baru untuk melanjutkan",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white70),
               ),
@@ -41,7 +41,7 @@ class LoginScreen extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const Login()),
                   );
                 },
-                child: const Text("LOGIN"),
+                child: const Text("MASUK"),
               ),
               const SizedBox(height: 10),
               OutlinedButton(
@@ -56,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                   );
                 },
                 child: const Text(
-                  "CREATE ACCOUNT",
+                  "BUAT AKUN",
                   style: TextStyle(color: Colors.deepPurpleAccent),
                 ),
               ),

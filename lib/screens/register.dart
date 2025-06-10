@@ -1,3 +1,4 @@
+import 'package:doobee_uas/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class RegisterScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Register",
+              "Daftar",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -89,12 +90,17 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurpleAccent,
                 minimumSize: const Size(double.infinity, 48),
               ),
-              child: const Text("Register"),
+              child: const Text("Daftar"),
             ),
             const SizedBox(height: 20),
             Row(
@@ -102,7 +108,7 @@ class RegisterScreen extends StatelessWidget {
                 Expanded(child: Divider(color: Colors.white24)),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text("or", style: TextStyle(color: Colors.white54)),
+                  child: Text("atau", style: TextStyle(color: Colors.white54)),
                 ),
                 Expanded(child: Divider(color: Colors.white24)),
               ],
@@ -120,7 +126,7 @@ class RegisterScreen extends StatelessWidget {
                   Icon(Icons.g_mobiledata, color: Colors.white),
                   SizedBox(width: 10),
                   Text(
-                    'Register with Google',
+                    'Daftar dengan Google',
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -139,7 +145,7 @@ class RegisterScreen extends StatelessWidget {
                   Icon(Icons.apple, color: Colors.white),
                   SizedBox(width: 10),
                   Text(
-                    'Register with Apple',
+                    'Daftar dengan Apple',
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -153,11 +159,11 @@ class RegisterScreen extends StatelessWidget {
                 },
                 child: const Text.rich(
                   TextSpan(
-                    text: "Already have an account? ",
+                    text: "Sudah punya akun?",
                     style: TextStyle(color: Colors.white54),
                     children: [
                       TextSpan(
-                        text: "Login",
+                        text: "Masuk",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

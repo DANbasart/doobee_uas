@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_screen.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -64,6 +65,8 @@ class Login extends StatelessWidget {
                 obscureText: true,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
+                  hintText: 'Enter your Password',
+                  hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.transparent,
                   enabledBorder: OutlineInputBorder(
@@ -78,7 +81,12 @@ class Login extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF7A5DF5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -91,12 +99,12 @@ class Login extends StatelessWidget {
               const SizedBox(height: 24),
               Row(
                 children: const [
-                  Expanded(child: Divider(color: Colors.white38)),
+                  Expanded(child: Divider(color: Colors.white)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text('or', style: TextStyle(color: Colors.white54)),
+                    child: Text('or', style: TextStyle(color: Colors.white)),
                   ),
-                  Expanded(child: Divider(color: Colors.white38)),
+                  Expanded(child: Divider(color: Colors.white)),
                 ],
               ),
               const SizedBox(height: 24),
@@ -109,13 +117,13 @@ class Login extends StatelessWidget {
               const SizedBox(height: 24),
               Center(
                 child: RichText(
-                  text: TextSpan(
+                  text: const TextSpan(
                     text: "Don't have an account? ",
-                    style: const TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Colors.white70),
                     children: [
                       TextSpan(
                         text: 'Register',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -132,7 +140,7 @@ class Login extends StatelessWidget {
     );
   }
 
-  Widget _socialButton({required IconData icon, required String label}) {
+  static Widget _socialButton({required IconData icon, required String label}) {
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         side: const BorderSide(color: Color(0xFF7A5DF5)),

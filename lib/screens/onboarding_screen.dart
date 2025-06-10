@@ -17,21 +17,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingItem> _items = [
     OnboardingItem(
       image: 'assets/images/onboarding1.png',
-      title: 'Manage your tasks',
+      title: 'Kelola tugas Anda',
       description:
-          'You can easily manage all of your daily tasks in DoMe for free',
+          'Anda dapat dengan mudah mengelola semua tugas harian Anda di DooBee secara gratis',
     ),
     OnboardingItem(
       image: 'assets/images/onboarding2.png',
-      title: 'Create daily routine',
+      title: 'Ciptakan rutinitas harian',
       description:
-          'In UptoDo you can create your personalized routine to stay productive',
+          'Di DooBee Anda dapat membuat rutinitas pribadi untuk tetap produktif',
     ),
     OnboardingItem(
       image: 'assets/images/onboarding3.png',
-      title: 'Organize your tasks',
+      title: 'Atur tugas Anda',
       description:
-          'You can organize your daily tasks by adding your tasks into separate categories',
+          'Anda dapat mengatur tugas harian Anda dengan menambahkan tugas ke dalam kategori terpisah',
     ),
   ];
 
@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           );
                         },
                         child: const Text(
-                          "BACK",
+                          "KEMBALI",
                           style: TextStyle(color: Colors.white),
                         ),
                       )
@@ -104,8 +104,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: _nextPage,
                     child: Text(
                       _currentIndex == _items.length - 1
-                          ? "GET STARTED"
-                          : "NEXT",
+                          ? "AYO MULAI"
+                          : "LANJUT",
                     ),
                   ),
                 ],
