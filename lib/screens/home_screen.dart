@@ -1,3 +1,4 @@
+import 'package:doobee_uas/screens/task.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -54,7 +55,12 @@ class HomeScreen extends StatelessWidget {
         ),
         child: IconButton(
           icon: const Icon(Icons.add, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const TaskScreen()),
+            );
+          },
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
