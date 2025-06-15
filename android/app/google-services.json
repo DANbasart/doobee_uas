@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125673623279",
+    "project_id": "doobee-f42af",
+    "storage_bucket": "doobee-f42af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125673623279:android:e48a49750e5ec13e46951a",
+        "android_client_info": {
+          "package_name": "com.example.doobee_uas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxOi5g0aG0dEHk4IKGzzCYzhtRWDQs3tI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,67 @@
 import 'package:doobee_uas/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+class Register extends StatefulWidget {
+  const Register({super.key});
+
+  @override
+  State<Register> createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  bool isLoading = false;
+
+  void registerUser() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      showMessage("Semua field harus diisi!");
+      return;
+    }
+
+    if (password != confirmPassword) {
+      showMessage("Password tidak cocok!");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String msg = "Terjadi kesalahan";
+      if (e.code == 'email-already-in-use') {
+        msg = 'Email sudah digunakan';
+      } else if (e.code == 'weak-password') {
+        msg = 'Password terlalu lemah (min. 6 karakter)';
+      } else if (e.code == 'invalid-email') {
+        msg = 'Format email salah';
+      }
+      showMessage(msg);
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +89,14 @@ class RegisterScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            const Text("Username", style: TextStyle(color: Colors.white)),
+            const Text("Email", style: TextStyle(color: Colors.white)),
             const SizedBox(height: 6),
             TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: "Enter your Username",
+                hintText: "Enter your Email",
                 hintStyle: const TextStyle(color: Colors.white38),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white38),
@@ -51,6 +112,7 @@ class RegisterScreen extends StatelessWidget {
             const Text("Password", style: TextStyle(color: Colors.white)),
             const SizedBox(height: 6),
             TextField(
+              controller: passwordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -73,6 +135,7 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             TextField(
+              controller: confirmPasswordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -90,17 +153,15 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-              },
+              onPressed: isLoading ? null : registerUser,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurpleAccent,
                 minimumSize: const Size(double.infinity, 48),
               ),
-              child: const Text("Daftar"),
+              child:
+                  isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Daftar"),
             ),
             const SizedBox(height: 20),
             Row(
@@ -115,7 +176,7 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {}, // TODO: Tambahkan Google Sign-In
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.deepPurpleAccent),
                 minimumSize: const Size(double.infinity, 48),
@@ -154,16 +215,14 @@ class RegisterScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () => Navigator.pop(context),
                 child: const Text.rich(
                   TextSpan(
                     text: "Sudah punya akun?",
                     style: TextStyle(color: Colors.white54),
                     children: [
                       TextSpan(
-                        text: "Masuk",
+                        text: " Masuk",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

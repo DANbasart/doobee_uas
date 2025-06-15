@@ -1,14 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
+import 'register.dart'; // Pastikan kamu nanti kirim ini yaa, King Niels!
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+  State<Login> createState() => _LoginState();
+}
 
+class _LoginState extends State<Login> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+
+  void loginUser() async {
+    setState(() => isLoading = true);
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message = 'Login gagal';
+      if (e.code == 'user-not-found') {
+        message = 'User tidak ditemukan';
+      } else if (e.code == 'wrong-password') {
+        message = 'Password salah';
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -37,13 +72,14 @@ class Login extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              const Text('Username', style: TextStyle(color: Colors.white)),
+              const Text('Email', style: TextStyle(color: Colors.white)),
               const SizedBox(height: 8),
               TextField(
-                controller: usernameController,
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Enter your Username',
+                  hintText: 'Enter your email',
                   hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.transparent,
@@ -65,7 +101,7 @@ class Login extends StatelessWidget {
                 obscureText: true,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Enter your Password',
+                  hintText: 'Enter your password',
                   hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.transparent,
@@ -81,12 +117,7 @@ class Login extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                },
+                onPressed: isLoading ? null : loginUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF7A5DF5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -94,7 +125,10 @@ class Login extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Login'),
+                child:
+                    isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Login'),
               ),
               const SizedBox(height: 24),
               Row(
@@ -116,19 +150,27 @@ class Login extends StatelessWidget {
               _socialButton(icon: Icons.apple, label: "Login with Apple"),
               const SizedBox(height: 24),
               Center(
-                child: RichText(
-                  text: const TextSpan(
-                    text: "Don't have an account? ",
-                    style: TextStyle(color: Colors.white70),
-                    children: [
-                      TextSpan(
-                        text: 'Register',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Register()),
+                    );
+                  },
+                  child: RichText(
+                    text: const TextSpan(
+                      text: "Don't have an account? ",
+                      style: TextStyle(color: Colors.white70),
+                      children: [
+                        TextSpan(
+                          text: 'Register',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -147,7 +189,9 @@ class Login extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      onPressed: () {},
+      onPressed: () {
+        // Placeholder untuk login Google/Apple
+      },
       icon: Icon(icon, color: Colors.white),
       label: Text(label, style: const TextStyle(color: Colors.white)),
     );
