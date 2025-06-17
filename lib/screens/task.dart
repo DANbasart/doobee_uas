@@ -1,201 +1,361 @@
 import 'package:flutter/material.dart';
+import 'package:doobee_uas/models/task_model.dart';
 import 'package:intl/intl.dart';
 
-class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key});
+class TaskPopup extends StatefulWidget {
+  const TaskPopup({super.key});
 
   @override
-  State<TaskScreen> createState() => _TaskScreenState();
+  State<TaskPopup> createState() => _TaskPopupState();
 }
 
-class _TaskScreenState extends State<TaskScreen> {
+class _TaskPopupState extends State<TaskPopup> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descController = TextEditingController();
 
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  DateTime? selectedDateTime;
   int selectedPriority = 1;
+  String? selectedCategory;
 
-  String formatDate(DateTime date) {
-    return DateFormat('EEEE, d MMMM yyyy').format(date);
-  }
+  String formatDateTime(DateTime dateTime) =>
+      DateFormat('EEE, d MMM yyyy - hh:mm a').format(dateTime);
 
-  String formatTime(TimeOfDay time) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    return DateFormat.jm().format(dt); // Contoh: 08:30 AM
-  }
-
-  Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> pickDateTime() async {
+    final pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: selectedDateTime ?? DateTime.now(),
+      firstDate: DateTime(2020),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(data: ThemeData.dark(), child: child!);
-      },
+      builder: (context, child) => Theme(data: ThemeData.dark(), child: child!),
     );
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
 
-  Future<void> pickTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+    if (pickedDate == null) return;
+
+    final pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null) {
-      setState(() {
-        selectedTime = picked;
-      });
+
+    if (pickedTime != null) {
+      final fullDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      setState(() => selectedDateTime = fullDateTime);
     }
   }
 
-  Future<void> pickPriority() async {
-    int? result = await showDialog<int>(
+  Future<void> pickCategory() async {
+    final categories = [
+      {
+        'label': 'Grocery',
+        'icon': Icons.shopping_cart,
+        'color': Colors.greenAccent,
+      },
+      {'label': 'Work', 'icon': Icons.work_outline, 'color': Colors.orange},
+      {'label': 'Sport', 'icon': Icons.fitness_center, 'color': Colors.cyan},
+      {
+        'label': 'Design',
+        'icon': Icons.design_services,
+        'color': Colors.tealAccent,
+      },
+      {'label': 'University', 'icon': Icons.school, 'color': Colors.blueAccent},
+      {
+        'label': 'Social',
+        'icon': Icons.people_outline,
+        'color': Colors.pinkAccent,
+      },
+      {
+        'label': 'Music',
+        'icon': Icons.music_note,
+        'color': Colors.purpleAccent,
+      },
+      {
+        'label': 'Health',
+        'icon': Icons.health_and_safety,
+        'color': Colors.deepPurple,
+      },
+      {'label': 'Movie', 'icon': Icons.movie, 'color': Colors.lightBlueAccent},
+    ];
+
+    final result = await showDialog<String>(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (context) => Dialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: const Text(
-              'Select Priority',
-              style: TextStyle(color: Colors.white),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            content: Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: List.generate(10, (index) {
-                int number = index + 1;
-                return InkWell(
-                  onTap: () => Navigator.pop(context, number),
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color:
-                          selectedPriority == number
-                              ? const Color(0xFF7A5DF5)
-                              : Colors.grey[800],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$number',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight:
+                    MediaQuery.of(context).size.height *
+                    0.55, // Tinggi dialog hanya 55% layar
+                maxWidth: 320,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Choose Category',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
-                  ),
-                );
-              }),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: GridView.builder(
+                        itemCount: categories.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 0.85,
+                            ),
+                        itemBuilder: (context, index) {
+                          final item = categories[index];
+                          final isSelected = selectedCategory == item['label'];
+                          return GestureDetector(
+                            onTap:
+                                () => Navigator.pop(
+                                  context,
+                                  item['label'] as String,
+                                ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color:
+                                    isSelected
+                                        ? const Color(0xFF7A5DF5)
+                                        : item['color'] as Color,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    item['icon'] as IconData,
+                                    color: Colors.black,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    item['label'] as String,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
     );
 
     if (result != null) {
-      setState(() {
-        selectedPriority = result;
-      });
+      setState(() => selectedCategory = result);
     }
+  }
+
+  Future<void> pickPriority() async {
+    int tempSelectedPriority = selectedPriority;
+
+    final result = await showDialog<int>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1E1E1E),
+            title: const Text(
+              'Task Priority',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: StatefulBuilder(
+              builder:
+                  (context, setStateDialog) => Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: List.generate(10, (index) {
+                      int number = index + 1;
+                      bool isSelected = tempSelectedPriority == number;
+
+                      return GestureDetector(
+                        onTap: () {
+                          setStateDialog(() {
+                            tempSelectedPriority = number;
+                          });
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color:
+                                isSelected
+                                    ? const Color(0xFF7A5DF5)
+                                    : const Color(0xFF2A2A2A),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.flag_outlined,
+                                color:
+                                    isSelected ? Colors.white : Colors.white70,
+                              ),
+                              Text(
+                                '$number',
+                                style: TextStyle(
+                                  color:
+                                      isSelected
+                                          ? Colors.white
+                                          : Colors.white60,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7A5DF5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context, tempSelectedPriority),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+    );
+
+    if (result != null) {
+      setState(() => selectedPriority = result);
+    }
+  }
+
+  void saveTask() {
+    final title = titleController.text.trim();
+    final desc = descController.text.trim();
+
+    if (title.isEmpty) return;
+
+    final newTask = Task(
+      title: title,
+      description: desc,
+      dateTime: selectedDateTime,
+      category: selectedCategory,
+      priority: selectedPriority,
+    );
+
+    Navigator.pop(context, newTask); // Kirim data kembali ke HomeScreen
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Add Task', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Add Task',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15),
             TextField(
               controller: titleController,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                hintText: 'Task Title',
-                hintStyle: TextStyle(color: Colors.white54),
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                hintText: 'Do math homework',
+                hintStyle: const TextStyle(color: Colors.white54),
+                filled: true,
+                fillColor: const Color(0xFF2A2A2A),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: descController,
-              style: const TextStyle(color: Colors.white70),
               maxLines: 2,
-              decoration: const InputDecoration(
+              style: const TextStyle(color: Colors.white70),
+              decoration: InputDecoration(
                 hintText: 'Description',
-                hintStyle: TextStyle(color: Colors.white38),
-                border: InputBorder.none,
+                hintStyle: const TextStyle(color: Colors.white38),
+                filled: true,
+                fillColor: const Color(0xFF2A2A2A),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
                 IconButton(
-                  onPressed: pickDate,
-                  icon: const Icon(Icons.calendar_today, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  selectedDate != null
-                      ? formatDate(selectedDate!)
-                      : 'Pick a date',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: pickTime,
+                  onPressed: pickDateTime,
                   icon: const Icon(Icons.access_time, color: Colors.white),
+                  tooltip: 'Pilih Tanggal & Waktu',
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  selectedTime != null
-                      ? formatTime(selectedTime!)
-                      : 'Pick a time',
-                  style: const TextStyle(color: Colors.white),
+                IconButton(
+                  onPressed: pickCategory,
+                  icon: const Icon(
+                    Icons.local_offer_outlined,
+                    color: Colors.white,
+                  ),
+                  tooltip: 'Pilih Kategori',
                 ),
-              ],
-            ),
-            Row(
-              children: [
                 IconButton(
                   onPressed: pickPriority,
-                  icon: const Icon(Icons.priority_high, color: Colors.white),
+                  icon: const Icon(Icons.flag_outlined, color: Colors.white),
+                  tooltip: 'Pilih Prioritas',
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  'Priority: $selectedPriority',
-                  style: const TextStyle(color: Colors.white),
+                const Spacer(),
+                IconButton(
+                  onPressed: saveTask,
+                  icon: const Icon(
+                    Icons.send_rounded,
+                    color: Color(0xFF7A5DF5),
+                    size: 28,
+                  ),
                 ),
               ],
-            ),
-            const Spacer(),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Kirim atau simpan task
-                Navigator.pop(context); // balik ke home
-              },
-              icon: const Icon(Icons.check),
-              label: const Text('Save Task'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7A5DF5),
-                minimumSize: const Size.fromHeight(50),
-              ),
             ),
           ],
         ),

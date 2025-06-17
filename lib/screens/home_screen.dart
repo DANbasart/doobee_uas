@@ -1,9 +1,14 @@
-import 'package:doobee_uas/screens/task.dart';
 import 'package:flutter/material.dart';
+import 'package:doobee_uas/screens/task.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,22 +51,18 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: Container(
-        height: 60,
-        width: 60,
-        decoration: BoxDecoration(
-          color: const Color(0xFF9B8CFF),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.add, color: Colors.white),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const TaskScreen()),
-            );
-          },
-        ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF9B8CFF),
+        elevation: 6,
+        child: const Icon(Icons.add, size: 30),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => const TaskPopup(),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
@@ -78,7 +79,7 @@ class HomeScreen extends StatelessWidget {
               children: const [
                 BottomNavItem(icon: Icons.home, label: 'Beranda'),
                 BottomNavItem(icon: Icons.calendar_today, label: 'Kalender'),
-                SizedBox(width: 40),
+                SizedBox(width: 40), // Notch space
                 BottomNavItem(icon: Icons.timer, label: 'Fokus'),
                 BottomNavItem(icon: Icons.person, label: 'Profil'),
               ],
@@ -98,13 +99,22 @@ class BottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.white),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.white)),
-      ],
+    return InkWell(
+      onTap: () {
+        // Tambahkan navigasi halaman jika sudah dibuat
+      },
+      borderRadius: BorderRadius.circular(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 }
