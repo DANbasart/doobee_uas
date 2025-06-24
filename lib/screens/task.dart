@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:doobee_uas/models/task_model.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TaskPopup extends StatefulWidget {
   const TaskPopup({super.key});
@@ -17,8 +18,9 @@ class _TaskPopupState extends State<TaskPopup> {
   int selectedPriority = 1;
   String? selectedCategory;
 
-  String formatDateTime(DateTime dateTime) =>
-      DateFormat('EEE, d MMM yyyy - hh:mm a').format(dateTime);
+  String formatDateTime(DateTime dateTime) {
+    return DateFormat('EEE, d MMM yyyy - hh:mm a').format(dateTime);
+  }
 
   Future<void> pickDateTime() async {
     final pickedDate = await showDatePicker(
@@ -91,9 +93,7 @@ class _TaskPopupState extends State<TaskPopup> {
             ),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight:
-                    MediaQuery.of(context).size.height *
-                    0.55, // Tinggi dialog hanya 55% layar
+                maxHeight: MediaQuery.of(context).size.height * 0.55,
                 maxWidth: 320,
               ),
               child: Padding(
@@ -186,15 +186,13 @@ class _TaskPopupState extends State<TaskPopup> {
                     spacing: 12,
                     runSpacing: 12,
                     children: List.generate(10, (index) {
-                      int number = index + 1;
-                      bool isSelected = tempSelectedPriority == number;
-
+                      final number = index + 1;
+                      final isSelected = tempSelectedPriority == number;
                       return GestureDetector(
-                        onTap: () {
-                          setStateDialog(() {
-                            tempSelectedPriority = number;
-                          });
-                        },
+                        onTap:
+                            () => setStateDialog(
+                              () => tempSelectedPriority = number,
+                            ),
                         child: Container(
                           width: 60,
                           height: 60,
@@ -257,27 +255,38 @@ class _TaskPopupState extends State<TaskPopup> {
     }
   }
 
-  void saveTask() {
+  void saveTask() async {
     final title = titleController.text.trim();
     final desc = descController.text.trim();
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (title.isEmpty) return;
+    if (title.isEmpty || user == null) return;
 
-    final newTask = Task(
-      title: title,
-      description: desc,
-      dateTime: selectedDateTime,
-      category: selectedCategory,
-      priority: selectedPriority,
-    );
+    await FirebaseFirestore.instance.collection('tasks').add({
+      'title': title,
+      'description': desc,
+      'dateTime':
+          selectedDateTime != null
+              ? Timestamp.fromDate(selectedDateTime!)
+              : null,
+      'category': selectedCategory,
+      'priority': selectedPriority,
+      'userEmail': user.email,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
 
-    Navigator.pop(context, newTask); // Kirim data kembali ke HomeScreen
+    if (context.mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 30,
+      ),
       decoration: const BoxDecoration(
         color: Color(0xFF1E1E1E),
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -299,7 +308,7 @@ class _TaskPopupState extends State<TaskPopup> {
               controller: titleController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Do math homework',
+                hintText: 'Name Task',
                 hintStyle: const TextStyle(color: Colors.white54),
                 filled: true,
                 fillColor: const Color(0xFF2A2A2A),

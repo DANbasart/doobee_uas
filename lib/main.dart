@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'DooBee',
-      home: const HomeScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
