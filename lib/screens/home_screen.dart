@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:doobee_uas/screens/task.dart';
+import 'package:doobee_uas/screens/task_detail.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -97,6 +98,7 @@ class HomeScreen extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
+              final docId = docs[index].id;
 
               final title = data['title'] ?? '-';
               final description = data['description'] ?? '';
@@ -125,104 +127,116 @@ class HomeScreen extends StatelessWidget {
               final categoryData =
                   category != null ? categoryMap[category] : null;
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2A2A2A),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.radio_button_unchecked,
-                      color: Colors.white70,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) =>
+                              TaskDetailScreen(taskId: docId, taskData: data),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          if (timeText.isNotEmpty) ...[
-                            const SizedBox(height: 4),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A2A2A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.radio_button_unchecked,
+                        color: Colors.white70,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              timeText,
+                              title,
                               style: const TextStyle(
-                                color: Colors.white54,
-                                fontSize: 13,
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
+                            if (timeText.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                timeText,
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    if (categoryData != null)
+                      const SizedBox(width: 8),
+                      if (categoryData != null)
+                        Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: categoryData['color'],
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                categoryData['icon'],
+                                size: 16,
+                                color: Colors.black,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                category ?? '',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       Container(
-                        margin: const EdgeInsets.only(right: 6),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
+                          horizontal: 6,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: categoryData['color'],
+                          border: Border.all(color: Colors.deepPurpleAccent),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              categoryData['icon'],
-                              size: 16,
-                              color: Colors.black,
+                            const Icon(
+                              Icons.flag_outlined,
+                              size: 14,
+                              color: Colors.white,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              category ?? '',
+                              priority.toString(),
                               style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontSize: 13,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepPurpleAccent),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.flag_outlined,
-                            size: 14,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            priority.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
