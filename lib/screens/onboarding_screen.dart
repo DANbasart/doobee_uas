@@ -106,6 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       _currentIndex == _items.length - 1
                           ? "AYO MULAI"
                           : "LANJUT",
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],

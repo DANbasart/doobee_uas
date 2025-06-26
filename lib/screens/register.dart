@@ -161,7 +161,10 @@ class _RegisterState extends State<Register> {
               child:
                   isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Daftar"),
+                      : const Text(
+                        "Daftar",
+                        style: TextStyle(color: Colors.white),
+                      ),
             ),
             const SizedBox(height: 20),
             Row(

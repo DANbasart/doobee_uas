@@ -41,7 +41,10 @@ class LoginScreen extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const Login()),
                   );
                 },
-                child: const Text("MASUK"),
+                child: const Text(
+                  "MASUK",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               const SizedBox(height: 10),
               OutlinedButton(

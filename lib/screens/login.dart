@@ -128,7 +128,10 @@ class _LoginState extends State<Login> {
                 child:
                     isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Login'),
+                        : const Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white),
+                        ),
               ),
               const SizedBox(height: 24),
               Row(
